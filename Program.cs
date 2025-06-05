@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using UserManagementApi.Data;         
-using UserManagementApi.Endpoints;    
-using UserManagementApi.Services;     
-using UserManagementApi.Middleware;   
+using UserManagementApi.Data;
+using UserManagementApi.Endpoints;
+using UserManagementApi.Middleware;
+using UserManagementApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,10 +24,14 @@ builder.Services.AddSwaggerGen(c => {
 });
 
 builder.Services.AddCors(options => {
-    options.AddPolicy("AllowAll",
-        builder => builder.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader());
+    options.AddPolicy("AllowFrontEnd", policy => {
+        policy.WithOrigins("https://user-management-frontend-h8hc.onrender.com",
+                           "http://localhost:5173",
+                           "https://localhost:5173"
+               )
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 var app = builder.Build();
 
@@ -35,7 +39,7 @@ if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI(c => {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-        c.RoutePrefix = string.Empty; 
+        c.RoutePrefix = string.Empty;
     });
 }
 
@@ -49,7 +53,7 @@ using (var scope = app.Services.CreateScope()) {
     db.Database.Migrate();
 }
 
-app.UseCors("AllowAll");
+app.UseCors("AllowFrontEnd");
 app.MapUserEndpoints();
 app.MapCarEndpoints();
 
