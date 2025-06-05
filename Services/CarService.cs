@@ -50,5 +50,9 @@ public class CarService : ICarService
         await _db.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> HasUsersAsync(int carId) {
+        return await _db.Users.AnyAsync(u => u.CarId == carId);
+    }
 }
 

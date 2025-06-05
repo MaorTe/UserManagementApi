@@ -9,4 +9,5 @@ public interface ICarService
     Task<Car> CreateAsync(Car newCar);
     Task<bool> UpdateAsync(int id, Car updatedCar);
     Task<bool> DeleteAsync(int id);
+    Task<bool> HasUsersAsync(int carId);
 }

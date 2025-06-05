@@ -13,7 +13,6 @@ public class UserService : IUserService
     }
 
     public async Task<IEnumerable<User>> GetAllAsync() {
-        // נשאב גם את הניווט לרכב (Include)
         return await _db.Users
                          .Include(u => u.Car)
                          .ToListAsync();

@@ -62,13 +62,20 @@ public static class CarEndpoints
 
         // DELETE api/cars/{id}
         group.MapDelete("/{id:int}", async (int id, ICarService service) => {
+            if (await service.HasUsersAsync(id)) {
+                return Results.BadRequest(new {
+                    Message = "Cannot delete this car because it is assigned to one or more users."
+                });
+            }
+
             var success = await service.DeleteAsync(id);
             return success ? Results.NoContent() : Results.NotFound();
         })
-        .WithName("DeleteCar")
-        .Produces(StatusCodes.Status204NoContent)                
-        .Produces(StatusCodes.Status404NotFound)                 
-        .WithSummary("Deletes a car by ID")
-        .WithDescription("Removes the car with the given ID from the database. Returns 204 on success or 404 if not found.");
+         .WithName("DeleteCar")
+         .Produces(StatusCodes.Status204NoContent)
+         .Produces(StatusCodes.Status404NotFound)
+         .Produces(StatusCodes.Status400BadRequest)
+         .WithSummary("Deletes a car by ID")
+         .WithDescription("Removes the car with the given ID if no users are assigned. Returns 204 on success, 404 if not found, or 400 if there are assigned users.");
     }
 }
