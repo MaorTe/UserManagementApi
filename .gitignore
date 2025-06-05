@@ -1,0 +1,22 @@
+# Build outputs
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+
+# Visual Studio caches
+.vs/
+
+# Appsettings (local secrets)
+appsettings.json
+
+# EF Core Migrations history (optional if you want to re-create migrations manually)
+Migrations/
+
+# Rider
+.idea/
+
+# VSCode
+.vscode/
