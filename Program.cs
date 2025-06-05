@@ -48,10 +48,10 @@ app.UseHttpsRedirection();
 // Error handling
 ExceptionHandler.Configure(app);
 
-using (var scope = app.Services.CreateScope()) {
-    var db = scope.ServiceProvider.GetRequiredService<AutoShopDbContext>();
-    db.Database.Migrate();
-}
+//using (var scope = app.Services.CreateScope()) {
+//    var db = scope.ServiceProvider.GetRequiredService<AutoShopDbContext>();
+//    db.Database.Migrate();
+//}
 
 app.UseCors("AllowFrontEnd");
 app.MapUserEndpoints();
