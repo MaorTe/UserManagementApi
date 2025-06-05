@@ -36,36 +36,35 @@ Dependency Injection is configured in `Program.cs`, providing a straightforward 
 ---
 
 ## Folder Structure
-UserManagementApi/
-├── Data/
-│ ├── AppDbContext.cs # EF Core DbContext and configurations
-│ └── … # (e.g., repository classes, migrations folder)
-│
-├── Endpoints/
-│ ├── UserEndpoints.cs # Minimal API route definitions for User CRUD
-│ └── …
-│
-├── Middleware/
-│ ├── ExceptionMiddleware.cs # Global exception handler (example)
-│ └── …
-│
-├── Models/
-│ ├── User.cs # Domain entity
-│ ├── UserDto.cs # DTO for incoming/outgoing payloads
-│ └── …
-│
-├── Services/
-│ ├── IUserService.cs # Business‐logic interface
-│ ├── UserService.cs # Concrete implementation
-│ └── …
-│
-├── Properties/
-│ └── launchSettings.json # Default launch settings (profiles, environment)
-│
-├── appsettings.Development.json # Development‐only settings (e.g., connection string)
-├── Program.cs # Application entry point: configure services & middleware
-├── UserManagementApi.csproj # .NET 9 project file
-└── UserManagementApi.sln # Visual Studio solution file
+UserManagementApi/ <br>
+├── Data/ AppDbContext.cs            # EF Core DbContext and configurations <br>
+│   └── …                           # (e.g., repository classes, migrations folder) <br>
+│<br>
+├── Endpoints/<br>
+│   ├── UserEndpoints.cs           # Minimal API route definitions for User CRUD<br>
+│   └── …                           <br>
+│<br>
+├── Middleware/<br>
+│   ├── ExceptionMiddleware.cs     # Global exception handler (example)<br>
+│   └── …                           <br>
+│<br>
+├── Models/<br>
+│   ├── User.cs                    # Domain entity<br>
+│   ├── UserDto.cs                 # DTO for incoming/outgoing payloads<br>
+│   └── …                           <br>
+│<br>
+├── Services/<br>
+│   ├── IUserService.cs            # Business-logic interface<br>
+│   ├── UserService.cs             # Concrete implementation<br>
+│   └── …                           <br>
+│<br>
+├── Properties/<br>
+│   └── launchSettings.json        # Default launch settings (profiles, environment)<br>
+│<br>
+├── appsettings.Development.json   # Development-only settings (e.g., connection string)<br>
+├── Program.cs                     # Application entry point: configure services & middleware<br>
+├── UserManagementApi.csproj       # .NET 9 project file<br>
+└── UserManagementApi.sln          # Visual Studio solution file<br>
 
 
 ## Prerequisites
@@ -101,9 +100,9 @@ Update the ConnectionStrings:DefaultConnection entry to point to your SQL Server
 ## Running the Application
 You can run the API from the command line or via an IDE (Visual Studio, Rider, VS Code).
 Via CLI
-    ```bash
-    dotnet run --project UserManagementApi.csproj
-
+   ```bash
+   dotnet run --project UserManagementApi.csproj
+   ```
 By default, the Minimal API will start listening on the ports specified in launchSettings.json.
 Via Visual Studio
 Open UserManagementApi.sln.
@@ -132,58 +131,35 @@ Once running, you should see console output indicating that the web host is list
 
 
 ## Architecture Overview
-The project follows a simplified Clean Architecture approach in a Minimal API style:
+1. **Data Layer (`/Data`)**
+   - **AppDbContext**: Inherits from `DbContext`, defines `DbSet<User> Users`, configures model relationships, migrations, and any seeding logic.
+   - **Repositories (optional)**: If implemented, these classes directly interact with EF Core to perform CRUD; otherwise, the service layer may directly use `AppDbContext`.
 
-Program.cs
+2. **Models (`/Models`)**
+   - **User**: The domain entity representing a user record (properties like `Id`, `FirstName`, `LastName`, `Email`, etc.).
+   - **UserDto**: A DTO to validate incoming data and shape outgoing responses (prevents over-posting or exposing internal fields).
 
-Configures services in a DI container (e.g., AddDbContext, AddScoped<IUserService, UserService>()).
+3. **Services (`/Services`)**
+   - **IUserService**: Defines business-logic operations (e.g., `CreateAsync`, `GetAllAsync`, `GetByIdAsync`, `UpdateAsync`, `DeleteAsync`).
+   - **UserService**: Implements `IUserService`, uses `AppDbContext` (or repository) to perform EF Core operations. Contains any validation or transactional logic.
 
-Registers middleware (e.g., global exception handling).
+4. **Endpoints (`/Endpoints`)**
+   - Defines one or more static classes (e.g., `UserEndpoints`) that group related routes. Each route handler calls the corresponding `IUserService` method.
+   - Uses minimal API syntax (`app.MapGet`, `app.MapPost`, etc.) to wire HTTP verbs to handler lambdas.
 
-Maps minimal API endpoints, delegating to service layer methods.
+5. **Middleware (`/Middleware`)**
+   - Custom middleware for cross-cutting concerns, such as:
+     - **ExceptionMiddleware**: Catches unhandled exceptions, logs them, and returns standardized error payloads.
+     - **LoggingMiddleware** (if present): Logs request/response details for diagnostics.
 
-Data Layer (/Data)
+6. **Dependency Injection**
+   - All services and the `DbContext` are registered in `Program.cs`.
+   - This promotes loose coupling and makes unit testing easier (services can be mocked).
 
-AppDbContext: Inherits from DbContext, defines DbSet<User> Users, configures model relationships, migrations, and any seeding logic.
-
-Repositories (optional): If implemented, these classes directly interact with EF Core to perform CRUD; otherwise, the service layer may directly use AppDbContext.
-
-Models (/Models)
-
-User: The domain entity representing a user record (properties like Id, FirstName, LastName, Email, etc.).
-
-UserDto: A DTO to validate incoming data and shape outgoing responses (prevents over‐posting or exposing internal fields).
-
-Services (/Services)
-
-IUserService: Defines business‐logic operations (e.g., CreateAsync, GetAllAsync, GetByIdAsync, UpdateAsync, DeleteAsync).
-
-UserService: Implements IUserService, uses AppDbContext (or repository) to perform EF Core operations. Contains any validation or transactional logic.
-
-Endpoints (/Endpoints)
-
-Defines one or more static classes (e.g., UserEndpoints) that group related routes. Each route handler calls the corresponding IUserService method.
-
-Uses minimal API syntax (app.MapGet, app.MapPost, etc.) to wire HTTP verbs to handler lambdas.
-
-Middleware (/Middleware)
-
-Custom middleware for cross‐cutting concerns, such as:
-
-ExceptionMiddleware: Catches unhandled exceptions, logs them, and returns standardized error payloads.
-
-LoggingMiddleware (if present): Logs request/response details for diagnostics.
-
-Dependency Injection
-
-All services and the DbContext are registered in Program.cs.
-
-This promotes loose coupling and makes unit testing easier (services can be mocked).
 Overall, the dependencies flow inward:
 
-Endpoints → Services → Data (AppDbContext) → Database
-
-Models (shared between layers to shape data)
+- **Endpoints** → **Services** → **Data (AppDbContext)** → **Database**
+- **Models** (shared between layers to shape data)
 
 This separation ensures that each layer has a single responsibility, making the codebase more maintainable and testable.
 
