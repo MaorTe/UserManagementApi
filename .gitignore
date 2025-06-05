@@ -13,7 +13,7 @@ obj/
 appsettings.json
 
 # EF Core Migrations history (optional if you want to re-create migrations manually)
-# Migrations/
+Migrations/
 
 # Rider
 .idea/
