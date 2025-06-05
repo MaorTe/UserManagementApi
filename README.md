@@ -1,11 +1,6 @@
 # UserManagementApi
-A .NET-based RESTful API for managing users. 
-This project provides endpoints to create, read, update, and delete user records, backed by Entity Framework Core and a relational database.
-It follows a modular "clean‐style" structure, separating data access, business logic, endpoint definitions, and middleware.
-
-A Minimal API project implementing Clean Architecture principles for basic user management (CRUD) operations.
-Built with .NET 9, Entity Framework Core, and dependency injection to provide a clean, modular, and maintainable codebase.
-
+A .NET 9-based Minimal API RESTful project for managing users and their associated cars, providing endpoints to create, read, update, and delete both user and car records backed by Entity Framework Core and a relational database.
+It follows Clean Architecture principles with a modular, clean‐style structure-separating data access, business logic, endpoint definitions, and middleware-and uses dependency injection to ensure a maintainable codebase.
 ---
 
 ## Table of Contents
